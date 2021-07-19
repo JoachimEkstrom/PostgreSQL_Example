@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <POU Name="MAIN" Id="{e9a265ce-7e63-4c73-bb36-1e00e2ed7efe}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	actDC 				: TIMESTRUCT;
+	dtTime				: DT;
+	dtString			: STRING;
+	
+
+	sTable				: STRING;
+	
+	bRunWrite			: BOOL;
+	fbPLCDBWrite    	: FB_PLCDBWriteEvt(sNetID := '', tTimeout := T#5S);
+	tcMessage       	: I_TcMessage;
+    myRecord        	: ST_SelectStruct;
+    ColumnNames     	: ARRAY[0..4] OF STRING(50); // Must be set to 50 char!
+	nstate 				: INT;
+	
+	fbPLCDBRead    		: FB_PLCDBReadEvt (sNetID := '', tTimeout := T#5S);
+    myCustomStruct 		: ARRAY[0..9] OF ST_SelectStruct; // Array of the numbers of rows you want to store. 
+    tcMessage1      	: I_TcMessage;
+	bRunAutolog			: BOOL;
+	
+	bRunRead			: BOOL;
+	fbPLCDBAutoLog    	: FB_PLCDBAutoLogEvt (sNetID:='', tTimeout := T#5S);
+	
+	startTime			: ULINT;
+	stopTime			: ULINT; 
+	diffTime			: ULINT; 
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Get time
+actDC := DCTIME64_TO_SYSTEMTIME ( F_GetCurDcTickTime64());
+dtTime := SYSTEMTIME_TO_DT(actDC);
+dtString := SYSTEMTIME_TO_STRING(actDC);
+
+
+// set Values
+myRecord._name := 'Testing';
+myRecord._dint := 2;
+myRecord._real := 12.34;
+myRecord._lreal := 34242.45367;
+myRecord._date := dtString;
+
+
+// Set columnnames -- Must be the same as in DB
+ColumnNames[0] := '_name';
+ColumnNames[1] := '_dint';
+ColumnNames[2] := '_real';
+ColumnNames[3] := '_lreal';
+ColumnNames[4] := '_date';
+
+sTable := '"public"."datatypes"'; // Important to have extra " " around both DBname and table name. 
+
+// Write one record to Database 
+IF bRunWrite THEN
+	startTime:= F_GetActualDcTime64();
+	// Call Functionblock
+	IF fbPLCDBWrite.WriteStruct(
+		hDBID:= 1, 
+		sTableName:= sTable, 
+		pRecord:= ADR(myRecord), 
+		cbRecord:= SIZEOF(myRecord), 
+		pColumnNames:= ADR(ColumnNames) , 
+		cbColumnNames:= SIZEOF(ColumnNames))
+	THEN
+		IF fbPLCDBWrite.bError THEN
+			tcMessage := fbPLCDBWrite.ipTcResult;
+			nState := 255;
+			bRunWrite := FALSE;
+			stopTime:= F_GetActualDcTime64();
+ 			diffTime:= StopTime-StartTime;
+		ELSE
+			nState := 0;
+			bRunWrite := FALSE;
+			stopTime:= F_GetActualDcTime64();
+ 			diffTime:= StopTime-StartTime;
+		END_IF
+	END_IF
+END_IF
+
+
+
+//	Read rows from the db.  	 
+
+IF bRunRead THEN
+	startTime:= F_GetActualDcTime64();
+	IF fbPLCDBRead.ReadStruct(
+		hDBID:= 1, 
+		sTableName:= sTable, 
+		pColumnNames:= ADR(ColumnNames), 
+		cbColumnNames:= SIZEOF(ColumnNames), 
+		sOrderByColumn:= ColumnNames[4], 
+		eOrderType:= E_OrderType.ASC, 
+		nStartIndex:= 0, 
+		nRecordCount:= 5, 
+		pData:= ADR(myCustomStruct), 
+		cbData:= SIZEOF(myCustomStruct))
+	THEN
+	
+		IF fbPLCDBRead.bError THEN
+			tcMessage1:= fbPLCDBRead.ipTcResult;
+			nState := 255; 
+			bRunRead:=FALSE;
+			stopTime:= F_GetActualDcTime64();
+ 			diffTime:= StopTime-StartTime;
+		ELSE
+			nState := 0;
+			bRunRead:=FALSE;
+			stopTime:= F_GetActualDcTime64();
+ 			diffTime:= StopTime-StartTime;
+		END_IF
+	END_IF
+END_IF
+
+
+
+// Calling autolog group once
+IF bRunAutolog  THEN
+	startTime:= F_GetActualDcTime64();
+	IF fbPLCDBAutoLog.RunOnce(hAutologGrpID := 1, bAll := FALSE) THEN
+	
+	 	bRunAutolog := FALSE;
+		
+		stopTime:= F_GetActualDcTime64();
+ 		diffTime:= StopTime-StartTime;
+	END_IF
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="126" Count="0" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="29" Count="3" />
+      <LineId Id="117" Count="2" />
+      <LineId Id="33" Count="4" />
+      <LineId Id="120" Count="2" />
+      <LineId Id="38" Count="4" />
+      <LineId Id="190" Count="0" />
+      <LineId Id="44" Count="12" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="59" Count="2" />
+      <LineId Id="193" Count="1" />
+      <LineId Id="64" Count="8" />
+      <LineId Id="195" Count="0" />
+      <LineId Id="73" Count="16" />
+      <LineId Id="196" Count="1" />
+      <LineId Id="90" Count="2" />
+      <LineId Id="198" Count="1" />
+      <LineId Id="93" Count="7" />
+      <LineId Id="102" Count="3" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="201" Count="0" />
+      <LineId Id="200" Count="0" />
+      <LineId Id="109" Count="1" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
