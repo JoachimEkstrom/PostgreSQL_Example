@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<Table>
+  <ID>1</ID>
+  <Name>DBTable</Name>
+  <TableName>public.datatypes</TableName>
+  <FailOverTableName />
+  <TableMode>CUSTOM</TableMode>
+  <AdditionalSettings />
+  <Columns>
+    <Column>
+      <Name>_name</Name>
+      <Type>NVarChar</Type>
+      <Mode>MAPPED</Mode>
+      <MappedSymbolID>1</MappedSymbolID>
+    </Column>
+    <Column>
+      <Name>_dint</Name>
+      <Type>Integer</Type>
+      <Mode>MAPPED</Mode>
+      <MappedSymbolID>2</MappedSymbolID>
+    </Column>
+    <Column>
+      <Name>_real</Name>
+      <Type>Real</Type>
+      <Mode>MAPPED</Mode>
+      <MappedSymbolID>3</MappedSymbolID>
+    </Column>
+    <Column>
+      <Name>_lreal</Name>
+      <Type>Float</Type>
+      <Mode>MAPPED</Mode>
+      <MappedSymbolID>4</MappedSymbolID>
+    </Column>
+    <Column>
+      <Name>_date</Name>
+      <Type>NVarChar</Type>
+      <Mode>MAPPED</Mode>
+      <MappedSymbolID>5</MappedSymbolID>
+    </Column>
+  </Columns>
+</Table>

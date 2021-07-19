@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="10.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4c3ed9db-e1c9-4042-9777-7088779d4534}</ProjectGuid>
+    <AssemblyName>TwinCAT Connectivity PostgreSQL</AssemblyName>
+    <Name>TwinCAT Connectivity PostgreSQL</Name>
+    <RootNamespace>TwinCAT Connectivity PostgreSQL</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="PostgreSQL_Server.tcdbsrv">
+      <SubType>Content</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <tcdbsrvdbCompile Include="PostgreSQL_Server\PostgreSQL\PostgreSQL.tcdbsrvdb">
+      <DependentUpon>PostgreSQL_Server.tcdbsrv</DependentUpon>
+    </tcdbsrvdbCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <tcdbsrvautoCompile Include="PostgreSQL_Server\PostgreSQL\AutoLogGroup\AutoLogGroup.tcdbsrvauto">
+      <DependentUpon>PostgreSQL_Server\PostgreSQL\PostgreSQL.tcdbsrvdb</DependentUpon>
+    </tcdbsrvautoCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <tcdbsrvadsCompile Include="PostgreSQL_Server\PostgreSQL\AutoLogGroup\AdsDevice.tcdbsrvads">
+      <DependentUpon>PostgreSQL_Server\PostgreSQL\AutoLogGroup\AutoLogGroup.tcdbsrvauto</DependentUpon>
+    </tcdbsrvadsCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <tcdbsrvsymCompile Include="PostgreSQL_Server\PostgreSQL\AutoLogGroup\Symbols.tcdbsrvsym">
+      <DependentUpon>PostgreSQL_Server\PostgreSQL\AutoLogGroup\AutoLogGroup.tcdbsrvauto</DependentUpon>
+    </tcdbsrvsymCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <tcdbsrvtblCompile Include="PostgreSQL_Server\PostgreSQL\AutoLogGroup\DBTable.tcdbsrvtbl">
+      <DependentUpon>PostgreSQL_Server\PostgreSQL\AutoLogGroup\AutoLogGroup.tcdbsrvauto</DependentUpon>
+    </tcdbsrvtblCompile>
+  </ItemGroup>
+  <!-- This next bit is required unless the macro used to Import your targets is defined in an MSBuild toolset. -->
+  <ProjectExtensions>
+    <ProjectCapabilities>
+      <ProjectConfigurationsDeclaredAsItems />
+      <TcConnectivity />
+    </ProjectCapabilities>
+  </ProjectExtensions>
+</Project>
